@@ -1,8 +1,10 @@
 package client
 
 import (
+	"convert-rate-api/internal/logger"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -19,7 +21,12 @@ func FetchRate(baseURL, apiKey, from, to string) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("http request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			logger.LogError("Failed to close response body", err)
+		}
+	}(resp.Body)
 
 	if resp.StatusCode != 200 {
 		return 0, fmt.Errorf("non-200 response: %d", resp.StatusCode)

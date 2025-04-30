@@ -11,19 +11,12 @@ import (
 // LimiterMiddleware returns a Gin middleware that applies rate limiting based on IP.
 func LimiterMiddleware() gin.HandlerFunc {
 	limit := os.Getenv("RATE_LIMIT_REQUESTS")
-	window := os.Getenv("RATE_LIMIT_WINDOW")
 
 	if limit == "" {
-		limit = "100"
-	}
-	if window == "" {
-		window = "15m"
+		limit = "100-M"
 	}
 
-	// Format: "100-15m" means 100 requests per 15 minutes
-	rateStr := limit + "-" + window
-
-	rateConfig, err := limiter.NewRateFromFormatted(rateStr)
+	rateConfig, err := limiter.NewRateFromFormatted(limit)
 	if err != nil {
 		panic(err)
 	}

@@ -10,9 +10,6 @@
 *.o
 *.a
 
-# Go modules (if vendored)
-/vendor/
-
 # === GoLand / JetBrains ===
 .idea/
 *.iml
@@ -41,5 +38,4 @@ docker-compose.override.yml
 # === Others (optional) ===
 coverage/
 *.coverage
-*.log
 *.bak

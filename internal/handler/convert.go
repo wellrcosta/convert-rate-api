@@ -1,18 +1,17 @@
 package handler
 
 import (
+	"convert-rate-api/internal/logger"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	"convert-rate-api/internal/cache"
+	"convert-rate-api/internal/client"
+	"convert-rate-api/internal/metrics"
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
-
-	"exchange-rate-api/internal/cache"
-	"exchange-rate-api/internal/client"
-	"exchange-rate-api/internal/metrics"
 )
 
 func NewConverterHandler(c cache.CacheService) gin.HandlerFunc {
@@ -47,14 +46,17 @@ func NewConverterHandler(c cache.CacheService) gin.HandlerFunc {
 			apiURL := os.Getenv("EXCHANGE_API_URL")
 			rate, err = client.FetchRate(apiURL, apiKey, from, to)
 			if err != nil {
-				log.Error().Err(err).Msg("Failed to fetch exchange rate")
+				logger.LogError("Failed to fetch exchange rate", err)
 				metrics.Errors.Inc()
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch exchange rate"})
 				return
 			}
 
 			ttlSeconds, _ := strconv.Atoi(os.Getenv("CACHE_TTL_SECONDS"))
-			c.Set(ctx, cacheKey, fmt.Sprintf("%.6f", rate), time.Duration(ttlSeconds)*time.Second)
+			err := c.Set(ctx, cacheKey, fmt.Sprintf("%.6f", rate), time.Duration(ttlSeconds)*time.Second)
+			if err != nil {
+				return
+			}
 			cached = false
 			metrics.CacheMisses.Inc()
 		}

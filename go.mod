@@ -1,4 +1,4 @@
-module exchange-rate-api
+module convert-rate-api
 
 go 1.24
 
@@ -7,7 +7,6 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/joho/godotenv v1.5.1
 	github.com/prometheus/client_golang v1.22.0
-	github.com/rs/zerolog v1.34.0
 	github.com/ulule/limiter/v3 v3.11.2
 )
 

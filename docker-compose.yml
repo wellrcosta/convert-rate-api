@@ -11,7 +11,7 @@ services:
 
   exchange-rate-api:
     build: .
-    container_name: exchange-rate-api
+    container_name: convert-rate-api
     ports:
       - "3000:3000"
     env_file:
