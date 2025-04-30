@@ -34,12 +34,15 @@ func FetchRate(baseURL, apiKey, from, to string) (float64, error) {
 
 	var result exchangeResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		logger.LogError("Failed to decode JSON", err)
 		return 0, fmt.Errorf("failed to decode JSON: %w", err)
 	}
 
 	if result.Result != "success" {
+		logger.LogError("API error", fmt.Errorf("result=%s", result.Result))
 		return 0, fmt.Errorf("API error: result=%s", result.Result)
 	}
 
+	logger.LogInfo(fmt.Sprintf("Fetched exchange rate: %f", result.ConversionRate))
 	return result.ConversionRate, nil
 }
