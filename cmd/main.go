@@ -10,13 +10,18 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
+
+	"exchange-rate-api/internal/cache"
+	"exchange-rate-api/internal/handler"
+	"exchange-rate-api/internal/metrics"
+	"exchange-rate-api/internal/rate"
 )
 
 func main() {
 	// Load .env file if exists
 	_ = godotenv.Load()
 
-	// Set up a logger
+	// Set up logger
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	// Read Redis configuration
@@ -32,8 +37,20 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to connect to Redis")
 	}
 
+	// Initialize cache layer
+	cacheService := cache.NewRedisCache(rdb)
+
 	// Set up Gin and routes
 	router := gin.Default()
+
+	// Apply rate limiting middleware
+	router.Use(rate.LimiterMiddleware())
+
+	// Register metrics endpoint
+	router.GET("/metrics", metrics.PrometheusHandler())
+
+	// Register currency conversion handler
+	router.GET("/convert", handler.NewConverterHandler(cacheService))
 
 	// Start server
 	port := os.Getenv("PORT")

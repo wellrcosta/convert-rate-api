@@ -1,2 +1,45 @@
-.qodo
-.env
+# === Golang ===
+/bin/
+/build/
+/dist/
+/vendor/
+/coverage.out
+*.test
+*.exe
+*.out
+*.o
+*.a
+
+# Go modules (if vendored)
+/vendor/
+
+# === GoLand / JetBrains ===
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# === VS Code ===
+.vscode/
+.history/
+.code-workspace
+
+# === OS / Editor temp files ===
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.tmp
+*~
+
+# === Docker ===
+*.env
+.env.*
+docker-compose.override.yml
+
+# === Others (optional) ===
+coverage/
+*.coverage
+*.log
+*.bak
